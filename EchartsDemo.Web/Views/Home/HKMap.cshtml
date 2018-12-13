@@ -1,0 +1,124 @@
+﻿
+@{
+    ViewData["Title"] = "ZhongGuoMap";
+}
+
+<h1>ZhongGuoMap</h1>
+<div class="row" id="mapDemo">
+    <div class="col-md-12">
+        <div id="main" style="width:100%;height:800px;"></div>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        var width;
+        var height;
+        var myMap;
+        myChart = echarts.init($('#main').get(0));
+        myChart.showLoading();
+
+        $.get('@Url.Content("~/lib/echarts/map/json/province/xianggang.json")', function (geoJson) {
+            myChart.hideLoading();
+            echarts.registerMap('HK', geoJson);
+            myChart.setOption(option = {
+                title: {
+                    text: '香港18区人口密度 （2011）',
+                    subtext: '人口密度数据来自Wikipedia',
+                    sublink: ''
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}<br/>{c} (p / km2)'
+                },
+                toolbox: {
+                    show: true,
+                    orient: 'vertical',
+                    left: 'right',
+                    top: 'center',
+                    feature: {
+                        dataView: { readOnly: false },
+                        restore: {},
+                        saveAsImage: {}
+                    }
+                },
+                visualMap: {
+                    //min: 800,
+                    //max: 50000,
+                    //text: ['High', 'Low'],
+                    //realtime: false,
+                    //calculable: true,
+                    //inRange: {
+                    //    color: ['lightskyblue', 'yellow', 'orangered']
+                    //}
+
+
+                    type: 'piecewise',
+                    splitNumber: 4,
+                    realtime: false,
+                    calculable: true,
+                    pieces: [
+                        { min: 0, max: 20000, label: '一级' },
+                        { min: 20001, max: 30000, label: '二级' },
+                        { min: 30001, max: 40000, label: '三级' },
+                        { min: 40001, max: 50000, label: '高级' }
+                    ],
+                    inRange: {
+                        color: ['#ca3743', '#FFD700', '#6495ED', '#1fc364']
+                    }
+                },
+                series: [
+                    {
+                        name: '香港18区人口密度',
+                        type: 'map',
+                        mapType: 'HK', // 自定义扩展图表类型
+                        itemStyle: {
+                            normal: { label: { show: true } },
+                            emphasis: { label: { show: true } }
+                        },
+                        data: [
+                            { name: '中西区', value: 20057.34 },
+                            { name: '湾仔', value: 15477.48 },
+                            { name: '东区', value: 31686.1 },
+                            { name: '南区', value: 6992.6 },
+                            { name: '油尖旺', value: 44045.49 },
+                            { name: '深水埗', value: 40689.64 },
+                            { name: '九龙城', value: 37659.78 },
+                            { name: '黄大仙', value: 45180.97 },
+                            { name: '观塘', value: 55204.26 },
+                            { name: '葵青', value: 21900.9 },
+                            { name: '荃湾', value: 4918.26 },
+                            { name: '屯门', value: 5881.84 },
+                            { name: '元朗', value: 4178.01 },
+                            { name: '北区', value: 2227.92 },
+                            { name: '大埔', value: 2180.98 },
+                            { name: '沙田', value: 9172.94 },
+                            { name: '西贡', value: 3368 },
+                            { name: '离岛', value: 806.98 }
+                        ],
+                        // 自定义名称映射
+                        nameMap: {
+                            '中西区':'中西区',
+                            '东区': '东区',
+                            '离岛区': '离岛',
+                            '九龙城区': '九龙城',
+                            '葵青区': '葵青',
+                            '观塘区': '观塘',
+                            '北区': '北区',
+                            '西贡区': '西贡',
+                            '沙田区': '沙田',
+                            '深水埗区': '深水埗',
+                            '南区': '南区',
+                            '大埔区': '大埔',
+                            '荃湾区': '荃湾',
+                            '屯门区': '屯门',
+                            '湾仔区': '湾仔',
+                            '黄大仙区': '黄大仙',
+                            '油尖旺区': '油尖旺',
+                            '元朗区': '元朗'
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}

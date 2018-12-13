@@ -1,0 +1,167 @@
+﻿
+@{
+    ViewData["Title"] = "EchartsMap";
+}
+<h2>EchartsMap</h2>
+
+<div class="row" id="mapDemo" style="background-color:#8585c4;">
+    <div class="col-md-12">
+        <div id="main"></div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+    var width;
+    var height;
+
+    var myMap;
+
+    var myMapOption = {
+        textStyle: {
+            color: '#fff',
+            fontSize: '14',
+            fontWeight: 'normal'
+        },
+        title: {
+            text: '2018年全省各地市业务收入',
+            right: '16.5%',
+            top: '20',
+            textStyle: {
+                color: '#b8f4ff',
+                fontSize: '18',
+                fontWeight: 'normal'
+            }
+        },
+        tooltip: {
+            trigger: 'item',
+            padding: ['5', '10'],
+            extraCssText: 'box-shadow: 0 0 10px #0872a8',
+            formatter: function (parms) {
+                return parms.name + "<br/>业务收入:" + parms.data.amont + "万";
+            }
+        },
+        visualMap: {
+            right: '17%',
+            top: '70',
+            type: 'piecewise',
+            splitNumber: 4,
+            realtime: false,
+            calculable: true,
+            textStyle: {
+                color: '#b8f4ff',
+            },
+            pieces: [
+                { min: 1, max: 1, label: '严重落后' },
+                { min: 2, max: 2, label: '落后' },
+                { min: 3, max: 3, label: '正常' },
+                { min: 4, max: 4, label: '提前' }
+            ],
+            inRange: {
+                color: ['#ca3743', '#FFD700', '#6495ED', '#1fc364']
+            }
+        },
+        series: [{
+            type: 'map',
+            map: 'guangdong',
+            z: '3',
+            top: '0',
+            bottom: '0',
+            right: '0',
+            label: {
+                show: true,
+                color: '#fff',
+                fontSize: '12',
+                fontWeight: 'normal',
+                emphasis: {
+                    color: '#fff'
+                }
+            },
+            itemStyle: {
+                normal: {
+                    borderColor: '#fff',
+                    areaColor: '#082446',
+                    borderWidth: '1',
+                    opacity: '.8'
+
+                },
+                emphasis: {
+                    borderColor: '#fff',
+                    areaColor: '#2580c8',
+                    shadowColor: '#fff',
+                    shadowBlur: '10',
+                    opacity: '.6'
+                }
+            },
+            nameMap: {
+                "汕头市": '汕头',
+                '潮州市': '潮州',
+                '深圳市': '深圳',
+                '佛山市': '佛山',
+                '东莞市': '东莞',
+                '惠州市': '惠州',
+                '汕尾市': '汕尾',
+                '揭阳市': '揭阳',
+                '梅州市': '梅州',
+                '河源市': '河源',
+                '韶关市': '韶关',
+                '湛江市': '湛江',
+                '茂名市': '茂名',
+                '阳江市': '阳江',
+                '中山市': '中山',
+                '珠海市': '珠海',
+                '江门市': '江门',
+                '云浮市': '云浮',
+                '肇庆市': '肇庆',
+                '清远市': '清远',
+                '广州市': '广州'
+            }
+        }]
+    };
+
+    $(function () {
+        ////动态计算地图大小
+
+        width = $(window).width();
+        height = $(window).height();
+        $("#main").width(width);
+        $("#main").height(height / 1.3);
+        setMap();
+
+        //绑定地图点击事件
+        myMap.on('click', function (params) {
+            openDiv(params.name);
+        });
+    });
+
+        function openDiv(areaName) {
+            alert(areaName);
+        }
+
+    ////窗体大小改动
+    $(window).resize(function () {
+        width = $(window).width();
+        height = $(window).height();
+        $("#main").width(width);
+        $("#main").height(height / 1.3);
+        myMap.resize();
+    });
+
+    function setMap() {
+        //加载地图
+        myMap = echarts.init($('#main').get(0));
+
+        $.get('@Url.Action("GetMapJson")', function (geoJson) {
+            //注册地图数据
+            echarts.registerMap('HK', geoJson);
+
+            //请求后台数据
+            $.get('@Url.Action("GetIncomeMap")', function (res) {
+                //设置参数
+                myMapOption.series[0].data = res;
+                myMap.setOption(myMapOption);
+            });
+        });
+    }
+    </script>
+}
+
